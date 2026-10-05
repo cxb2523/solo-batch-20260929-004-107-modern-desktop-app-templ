@@ -1,10 +1,13 @@
 /** @file functions useful for all react projects */
+import { runtimeConfig } from '../config/runtime';
 import Cookies from 'js-cookie';
 import localforage from 'localforage';
 import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useState } from 'react';
 export { localforage };
 
-export const IS_DEVELOPMENT = import.meta.env.MODE === 'development';
+// 环境判断统一来自构建期静态注入的 runtimeConfig，这里不再直读 import.meta.env。
+// 历史语义：非 dev（含 staging）都按 production 对待。
+export const IS_DEVELOPMENT = runtimeConfig.isDev;
 export const IS_PRODUCTION = !IS_DEVELOPMENT;
 
 /**

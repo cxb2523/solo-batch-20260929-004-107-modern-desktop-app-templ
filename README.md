@@ -32,6 +32,43 @@ I do not recommend pulling from my repo because you will need to edit the same f
 
 - [Upgrading to Tauri v2](https://v2.tauri.app/start/migrate/from-tauri-1/)
 
+## Environments (dev / staging / prod)
+
+The template ships a reproducible three-mode build pipeline. The two key design
+decisions are documented inline next to the code that implements them:
+
+- **Frontend = build-time static injection.** `vite.config.ts` only exposes the
+  `VITE_APP_` prefix (`envPrefix`), and `src/config/runtime.ts` is the single
+  place allowed to read `import.meta.env`. Values become literals at build time,
+  so environment branches are tree-shakeable and prod bundles stay small — at
+  the cost of rebuilding to switch env. Components must never read
+  `import.meta.env` directly; import `runtimeConfig` instead.
+- **Rust = runtime config reads.** `src-tauri/src/lib.rs` reads the merged
+  Tauri config (and an optional `APP_UPDATE_ENDPOINT` env var) at startup so the
+  same binary can hot-swap host-side settings. On conflict the **build-time
+  value wins** for anything the UI / updater check relies on.
+- **One base file + thin overrides.** Frontend: `.env` + `.env.<mode>`.
+  Tauri: `src-tauri/tauri.conf.json` + `tauri.<env>.conf.json` (merged by
+  `scripts/tauri-env.mjs`, windows are merged by `label`). Capabilities are
+  generated from a single whitelist in that script — prod drops the devtools
+  permission and every `fs` wildcard, keeping only scoped `$APP/$DOCUMENT/
+  $DOWNLOAD` access.
+
+Commands:
+
+```bash
+pnpm verify:env             # builds all three modes, asserts injected vars /
+                            # identifier / capability sets; non-zero on over-privilege
+pnpm dev                    # tauri dev  (dev config + capabilities)
+pnpm dev:staging            # tauri dev  against staging override
+pnpm build:dev              # tauri build with dev  bundle identifier/endpoint
+pnpm build:staging          # pre-release bundle
+pnpm build:prod             # release bundle (no devtools / fs wildcards)
+```
+
+CI (`.github/workflows/build.yml`) runs a 3 envs × 3 OS matrix sharing the same
+env vars and verification steps, uploading one installer artifact per cell.
+
 ## Screenshots
 
 - The four views not found in boilerplate were added by yours truly. My About is the ViewExample provided in `src`

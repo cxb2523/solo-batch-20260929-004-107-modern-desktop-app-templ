@@ -1,0 +1,22 @@
+{
+  "$schema": "./gen/schemas/desktop-schema.json",
+  "identifier": "com.example.app.dev",
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "devtools": true,
+        "resizable": true,
+        "fullscreen": true,
+        "alwaysOnTop": true
+      }
+    ]
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "http://localhost:1421/updates/{{target}}/{{arch}}/{{current_version}}"
+      ]
+    }
+  }
+}

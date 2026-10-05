@@ -1,0 +1,99 @@
+# 三态（dev/staging/prod）× 三平台（ubuntu/macos/windows）可复现构建矩阵。
+#
+# 设计要点（与 scripts/tauri-env.mjs、vite.config.ts 对应）：
+#   - 单一 matrix 同时切换 runner.os 与 APP_ENV，三态共用同一组环境变量（env:）
+#     与同一组校验/构建步骤，避免给每个环境各写一份 job 导致步骤漂移；
+#   - 每个矩阵格先跑 pnpm run verify:env（三态前端各构建一次并断言注入变量、
+#     bundle identifier、capability 集合），越权或缺字段即整格失败；
+#   - tauri-env 生成器按 APP_ENV 产出 tauri.conf.<env>.json 与 capabilities 白名单，
+#     再交给 tauri build 产出该平台安装包（deb/AppImage、dmg/msi/nsis）。
+name: build
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { platform: 'ubuntu-latest',  target: 'linux',   app_env: 'dev' }
+          - { platform: 'ubuntu-latest',  target: 'linux',   app_env: 'staging' }
+          - { platform: 'ubuntu-latest',  target: 'linux',   app_env: 'prod' }
+          - { platform: 'macos-latest',   target: 'macos',   app_env: 'dev' }
+          - { platform: 'macos-latest',   target: 'macos',   app_env: 'staging' }
+          - { platform: 'macos-latest',   target: 'macos',   app_env: 'prod' }
+          - { platform: 'windows-latest', target: 'windows', app_env: 'dev' }
+          - { platform: 'windows-latest', target: 'windows', app_env: 'staging' }
+          - { platform: 'windows-latest', target: 'windows', app_env: 'prod' }
+    runs-on: ${{ matrix.platform }}
+    env:
+      # 三态共享的同一组环境变量。签名密钥只在仓库 secrets 里配置时生效，
+      # 缺失时 tauri-env 自动退化为未签名安装包（dev 永不产出 updater 工件）。
+      APP_ENV: ${{ matrix.app_env }}
+      TAURI_UPDATER_PUBKEY: ${{ secrets.TAURI_UPDATER_PUBKEY }}
+      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+      # 前端三态共用同一份基线变量，差异由 .env.<mode> 薄覆写。
+      CI: 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Linux system dependencies
+        if: matrix.target == 'linux'
+        run: |
+          sudo apt-get update
+          xargs -a environment/apt_packages.txt sudo apt-get install -y
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 三态共用的校验步骤：dev/staging/prod 各真实构建一次前端并断言
+      # 注入变量 / 前缀白名单 / bundle identifier / capability 集合。
+      - name: Verify dev/staging/prod environment builds
+        run: pnpm run verify:env
+
+      # 重新生成当前矩阵格对应环境的配置与能力白名单。
+      - name: Generate Tauri config for ${{ matrix.app_env }}
+        run: node scripts/tauri-env.mjs ${{ matrix.app_env }}
+
+      - name: Build Tauri app (${{ matrix.app_env }} / ${{ matrix.target }})
+        shell: bash
+        run: pnpm build:${APP_ENV}
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ matrix.target }}-${{ matrix.app_env }}
+          path: |
+            src-tauri/target/release/bundle/**/*.deb
+            src-tauri/target/release/bundle/**/*.AppImage
+            src-tauri/target/release/bundle/**/*.rpm
+            src-tauri/target/release/bundle/**/*.dmg
+            src-tauri/target/release/bundle/**/*.app.tar.gz
+            src-tauri/target/release/bundle/**/*.msi
+            src-tauri/target/release/bundle/**/*.exe
+          if-no-files-found: error

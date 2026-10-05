@@ -6,9 +6,11 @@ import { currentMonitor } from '@tauri-apps/api/window';
 import * as fs from '@tauri-apps/plugin-fs';
 import * as os from '@tauri-apps/plugin-os';
 import React, { PropsWithChildren, useContext, useEffect, useState } from 'react';
+import { runtimeConfig } from '../config/runtime';
 
 const WIN32_CUSTOM_TITLEBAR = false;
-export const APP_NAME = __APP_NAME__;
+// 应用名来自构建期静态注入，组件不再散读 __APP_NAME__/import.meta.env。
+export const APP_NAME = runtimeConfig.appName;
 export const IS_MOBILE = navigator.maxTouchPoints > 0;
 
 

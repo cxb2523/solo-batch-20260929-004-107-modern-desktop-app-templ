@@ -1,4 +1,4 @@
-import { ActionIcon, AppShell, Burger, Button, Group, Space, Text, useComputedColorScheme, useMantineColorScheme } from '@mantine/core';
+import { ActionIcon, AppShell, Badge, Burger, Button, Group, Space, Text, Tooltip, useComputedColorScheme, useMantineColorScheme } from '@mantine/core';
 import { useDisclosure, useHotkeys } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { isTauri } from '@tauri-apps/api/core';
@@ -17,6 +17,7 @@ import { Navigate, NavLink, Route, Routes } from 'react-router-dom';
 import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import classes from './App.module.css';
+import { runtimeConfig } from './config/runtime';
 import { fmtError, useCookie, useLocalForage } from './common/utils';
 import LanguageHeaders from './components/LanguageHeaders';
 import { ScrollToTop } from './components/ScrollToTop';
@@ -202,6 +203,18 @@ export default function () {
 					<Burger hiddenFrom='sm' opened={mobileNavOpened} onClick={toggleMobileNav} size='sm' />
 					<Burger visibleFrom='sm' opened={desktopNavOpened} onClick={toggleDesktopNav} size='sm' />
 					<Text>HEADER_TITLE {__VERSION__}</Text>
+					{/* 构建期注入的环境名与更新端点直接外露，方便发版时肉眼核对包体 */}
+					<Badge
+						color={runtimeConfig.isProd ? 'teal' : runtimeConfig.isStaging ? 'yellow' : 'red'}
+						variant='light'
+						radius='sm'>
+						{runtimeConfig.env}
+					</Badge>
+					<Tooltip label={runtimeConfig.updateEndpoint} multiline w={360} withArrow>
+						<Badge variant='outline' color='gray' radius='sm' styles={{ root: { textTransform: 'none', maxWidth: 220 } }}>
+							{runtimeConfig.updateEndpoint}
+						</Badge>
+					</Tooltip>
 				</Group>
 				<Group className={classes.headerRightItems} h='110%'>
 					<LanguageHeaders />

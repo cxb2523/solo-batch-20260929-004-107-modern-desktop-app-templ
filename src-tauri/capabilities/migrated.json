@@ -1,23 +1,12 @@
 {
-  "identifier": "migrated",
   "description": "permissions that were migrated from v1",
+  "identifier": "migrated",
   "local": true,
   "windows": [
     "main"
   ],
   "permissions": [
     "core:default",
-    "fs:allow-write-file",
-    "fs:allow-read-dir",
-    "fs:allow-mkdir",
-    {
-      "identifier": "fs:scope",
-      "allow": [
-        "$APP/*",
-        "$DOCUMENT/*",
-        "$DOWNLOAD/*"
-      ]
-    },
     "core:window:allow-maximize",
     "core:window:allow-unmaximize",
     "core:window:allow-minimize",
@@ -28,8 +17,16 @@
     "core:window:allow-set-fullscreen",
     "core:window:allow-set-focus",
     "core:window:allow-start-dragging",
+    "core:window:allow-toggle-maximize",
+    "updater:default",
+    "store:default",
+    "autostart:default",
+    "opener:default",
+    "log:default",
     "shell:allow-open",
+    "shell:default",
     "dialog:allow-message",
+    "dialog:default",
     "notification:default",
     "os:allow-platform",
     "os:allow-version",
@@ -39,15 +36,19 @@
     "os:allow-exe-extension",
     "os:allow-locale",
     "os:allow-hostname",
-    "process:allow-restart",
-    "fs:default",
-    "shell:default",
-    "notification:default",
     "os:default",
-    "dialog:default",
+    "process:allow-restart",
     "process:default",
-    "store:default",
-    "opener:default",
-    "log:default"
+    "fs:allow-write-file",
+    "fs:allow-read-dir",
+    "fs:allow-mkdir",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        "$APP/*",
+        "$DOCUMENT/*",
+        "$DOWNLOAD/*"
+      ]
+    }
   ]
 }

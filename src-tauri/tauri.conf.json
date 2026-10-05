@@ -1,4 +1,5 @@
 {
+  "$schema": "./gen/schemas/desktop-schema.json",
   "bundle": {
     "active": true,
     "targets": "all",
@@ -44,7 +45,7 @@
   "productName": "Product Name",
   "mainBinaryName": "Product Name",
   "version": "../package.json",
-  "identifier": "App.Name",
+  "identifier": "com.example.app",
   "app": {
     "security": {
       "csp": "default-src blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' 'self' img-src: 'self'; connect-src ipc: http://ipc.localhost"
@@ -60,9 +61,19 @@
         "visible": false,
         "decorations": true,
         "alwaysOnTop": false,
-        "useHttpsScheme": true
+        "useHttpsScheme": true,
+        "devtools": false
       }
     ],
     "withGlobalTauri": false
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "",
+      "endpoints": [
+        "https://updates.example.com/{{target}}/{{arch}}/{{current_version}}"
+      ],
+      "installMode": "passive"
+    }
   }
 }

@@ -4,3 +4,7 @@
 WixTools
 # ignore system tray icon dir
 /icons/SystemTray*/
+# tauri-env.mjs 生成的环境解析产物（由 tauri.conf.json + tauri.<env>.conf.json 合并而来）
+/tauri.conf.dev.json
+/tauri.conf.staging.json
+/tauri.conf.prod.json
