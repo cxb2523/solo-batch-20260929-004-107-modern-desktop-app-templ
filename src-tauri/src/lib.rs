@@ -17,9 +17,11 @@ use tauri_plugin_window_state;
 
 mod tray_icon;
 mod utils;
+mod runtime_config;
 
 use tray_icon::{TrayState, create_tray_icon, tray_update_lang};
 use utils::long_running_thread;
+use runtime_config::{get_runtime_config, read_runtime_config};
 
 #[derive(Clone, Serialize)]
 struct SingleInstancePayload {
@@ -82,7 +84,7 @@ pub fn run() {
     .plugin(tauri_plugin_shell::init())
     .plugin(tauri_plugin_fs::init())
     // custom commands
-    .invoke_handler(tauri::generate_handler![tray_update_lang, process_file,])
+    .invoke_handler(tauri::generate_handler![tray_update_lang, process_file, get_runtime_config])
     // allow only one instance and propagate args and cwd to existing instance
     .plugin(tauri_plugin_single_instance::init(|app, args, cwd| {
       app
@@ -98,6 +100,17 @@ pub fn run() {
     .setup(|app| {
       let _ = create_tray_icon(app.handle());
       app.manage(Mutex::new(TrayState::NotPlaying));
+
+      // Rust 侧运行时配置（热切换用）；注意与前端构建期静态值冲突时，以构建期为准
+      let runtime = read_runtime_config(&app.handle());
+      log::info!(
+        "runtime config: env={} identifier={} updater={} endpoints={:?} devtools={}",
+        runtime.app_env,
+        runtime.identifier,
+        runtime.updater_active,
+        runtime.update_endpoints,
+        runtime.devtools
+      );
 
       let app_handle = app.handle().clone();
       tauri::async_runtime::spawn(async move { long_running_thread(&app_handle).await });

@@ -1,0 +1,23 @@
+{
+  "identifier": "com.moderndesktop.app",
+  "build": {
+    "beforeBuildCommand": "pnpm build:prod"
+  },
+  "plugins": {
+    "appEnv": "prod",
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://updates.example.com/{{target}}/{{arch}}/{{current_version}}"
+      ]
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "devtools": false
+      }
+    ]
+  }
+}

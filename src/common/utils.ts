@@ -2,9 +2,11 @@
 import Cookies from 'js-cookie';
 import localforage from 'localforage';
 import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useState } from 'react';
+import { isDev } from '../config/runtime';
 export { localforage };
 
-export const IS_DEVELOPMENT = import.meta.env.MODE === 'development';
+// 环境判断统一来自构建期静态注入的 runtimeConfig，不再散读 import.meta.env
+export const IS_DEVELOPMENT = isDev;
 export const IS_PRODUCTION = !IS_DEVELOPMENT;
 
 /**

@@ -1,23 +1,16 @@
 {
-  "identifier": "migrated",
-  "description": "permissions that were migrated from v1",
-  "local": true,
-  "windows": [
-    "main"
-  ],
+  "identifier": "desktop-capability",
+  "description": "三态共享的白名单命令基线（不含 devtools / fs，环境差异见 profiles/*.json）。构建前由 scripts/tauri-merge.mjs 与 profile 合并到 capabilities/desktop.generated.json。",
+  "platforms": ["macOS", "windows", "linux"],
+  "windows": ["main"],
   "permissions": [
+    "updater:default",
+    "store:default",
+    "autostart:default",
+    "opener:default",
+    "log:default",
     "core:default",
-    "fs:allow-write-file",
-    "fs:allow-read-dir",
-    "fs:allow-mkdir",
-    {
-      "identifier": "fs:scope",
-      "allow": [
-        "$APP/*",
-        "$DOCUMENT/*",
-        "$DOWNLOAD/*"
-      ]
-    },
+    "core:window:allow-toggle-maximize",
     "core:window:allow-maximize",
     "core:window:allow-unmaximize",
     "core:window:allow-minimize",
@@ -29,7 +22,9 @@
     "core:window:allow-set-focus",
     "core:window:allow-start-dragging",
     "shell:allow-open",
+    "shell:default",
     "dialog:allow-message",
+    "dialog:default",
     "notification:default",
     "os:allow-platform",
     "os:allow-version",
@@ -39,15 +34,8 @@
     "os:allow-exe-extension",
     "os:allow-locale",
     "os:allow-hostname",
-    "process:allow-restart",
-    "fs:default",
-    "shell:default",
-    "notification:default",
     "os:default",
-    "dialog:default",
-    "process:default",
-    "store:default",
-    "opener:default",
-    "log:default"
+    "process:allow-restart",
+    "process:default"
   ]
 }

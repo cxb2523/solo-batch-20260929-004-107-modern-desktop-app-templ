@@ -1,0 +1,11 @@
+{
+  "description": "prod 专属：去掉 devtools 与 fs 通配（无 $DOWNLOAD/$DOCUMENT、无 * 通配、无 download-write-recursive），并显式 deny 内部 devtools 开关",
+  "permissions": [
+    "core:webview:deny-internal-toggle-devtools",
+    "fs:allow-mkdir",
+    {
+      "identifier": "fs:scope",
+      "allow": ["$APP/*"]
+    }
+  ]
+}

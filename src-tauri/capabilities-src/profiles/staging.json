@@ -1,0 +1,13 @@
+{
+  "description": "staging 专属：可开 devtools 便于验收；fs 收敛到 $APP 与 $DOWNLOAD，禁止 $DOCUMENT 与根级通配",
+  "permissions": [
+    "core:webview:allow-internal-toggle-devtools",
+    "fs:default",
+    "fs:allow-write-file",
+    "fs:allow-mkdir",
+    {
+      "identifier": "fs:scope",
+      "allow": ["$APP/*", "$DOWNLOAD/*"]
+    }
+  ]
+}

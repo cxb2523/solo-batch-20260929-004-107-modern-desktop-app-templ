@@ -1,0 +1,23 @@
+{
+  "identifier": "com.moderndesktop.app.staging",
+  "build": {
+    "beforeBuildCommand": "pnpm build:staging"
+  },
+  "plugins": {
+    "appEnv": "staging",
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://updates-staging.example.com/{{target}}/{{arch}}/{{current_version}}"
+      ]
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "devtools": true
+      }
+    ]
+  }
+}

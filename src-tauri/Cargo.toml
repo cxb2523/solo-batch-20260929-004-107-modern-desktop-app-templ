@@ -13,7 +13,9 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "2", features = ["tray-icon", "image-ico"] }
+# devtools feature 仅提供能力入口；窗口能否打开 devtools 由各环境物化配置中的
+# app.windows[].devtools（dev/staging=true, prod=false）与 capability 白名单共同控制
+tauri = { version = "2", features = ["tray-icon", "image-ico", "devtools"] }
 tauri-plugin-window-state = { version = "2" }
 tauri-plugin-store = "2"
 tauri-plugin-single-instance = { version = "2" }

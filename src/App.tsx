@@ -18,6 +18,7 @@ import SimpleBar from 'simplebar-react';
 import 'simplebar-react/dist/simplebar.min.css';
 import classes from './App.module.css';
 import { fmtError, useCookie, useLocalForage } from './common/utils';
+import { EnvironmentBadge } from './components/EnvironmentBadge';
 import LanguageHeaders from './components/LanguageHeaders';
 import { ScrollToTop } from './components/ScrollToTop';
 import { useTauriContext } from './tauri/TauriProvider';
@@ -204,6 +205,7 @@ export default function () {
 					<Text>HEADER_TITLE {__VERSION__}</Text>
 				</Group>
 				<Group className={classes.headerRightItems} h='110%'>
+					<EnvironmentBadge />
 					<LanguageHeaders />
 					<ActionIcon id='toggle-theme' title='Ctrl + J' variant='default' onClick={toggleColorScheme} size={30}>
 						{/* icon to show based on colorScheme */}

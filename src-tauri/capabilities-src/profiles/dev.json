@@ -1,0 +1,15 @@
+{
+  "description": "dev 专属：放开 devtools 与 fs 全通配（仅本机开发）",
+  "permissions": [
+    "core:webview:allow-internal-toggle-devtools",
+    "fs:default",
+    "fs:allow-write-file",
+    "fs:allow-read-dir",
+    "fs:allow-mkdir",
+    "fs:allow-download-write-recursive",
+    {
+      "identifier": "fs:scope",
+      "allow": ["$APP/*", "$DOCUMENT/*", "$DOWNLOAD/*"]
+    }
+  ]
+}

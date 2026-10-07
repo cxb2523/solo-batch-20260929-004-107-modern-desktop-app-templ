@@ -27,3 +27,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 stats.html
+
+# tauri 按环境物化出的合并配置/capabilities（由 scripts/tauri-merge.mjs 生成）
+src-tauri/.tauri-generated/
+src-tauri/capabilities/desktop.generated.json
